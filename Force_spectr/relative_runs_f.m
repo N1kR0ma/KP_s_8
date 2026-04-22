@@ -1,0 +1,113 @@
+function Area = relative_runs_f(speed_max, u_transmission, assimetric)
+    F = [];
+    a = -1e30;
+    q = 5;
+    if assimetric == 0
+        
+% % % % %  Вычисление средней скорости на каждой передаче
+    speed = 0.65 *speed_max * min(u_transmission)...
+        * g_vel_f(u_transmission)
+
+% % % % % Вычисление общей средней скорости автомобиля
+    mu = 0.6 * speed_max;
+
+% % % % %  Вычисление дисперсии распределения
+    sigma  = mu /3;
+
+% % % % %  Вычисление пробега на "нулевой передачи"
+    F_0 = cdf('Normal',min(speed)/q, mu, sigma);
+
+Area = zeros(length(speed)-1,1)
+F = zeros(length(speed)-1,1)
+% % % % %  Вычисление 
+    for i = 1:length(speed)-1
+        F(i) = cdf('Normal',speed(i), mu, sigma);
+        Area(i,1) = F(i,1) - F_0;
+        F_0 = F(i,1);
+    end
+Name = ['Распределение использования передач при' ...
+    ' использовании нормального распределения'];
+% F(i+1) = 1;
+% Area(i+1) = 1 - sum(Area);
+
+    else
+        
+% % % % %  Вычисление средней скорости на каждой передаче
+    speed = 0.8 *speed_max * min(u_transmission)...
+        * g_vel_f(u_transmission);
+
+% % % % % Вычисление общей средней скорости автомобиля
+    mu = 0.75 * speed_max;
+
+% % % % %  Вычисление дисперсии распределения
+    sigma  = mu /3;
+
+% % % % %  Вычисление пробега на "нулевой передачи"
+    F_0 = cdf('Normal',min(speed)/q, mu, sigma)...
+        - 2* OwenT((min(speed)/q+mu)/sigma, a);
+
+ Area = zeros(length(speed)-1,1)
+F = zeros(length(speed)-1,1)   
+    for i = 1:length(speed)-1
+F(i) = cdf('Normal', speed(i), mu, sigma)...
+    - 2* OwenT((speed(i)+mu)/sigma, a);
+
+Area(i) = F(i) - F_0;
+F_0 = F(i);
+    end
+Name = ['Распределение использования передач при' ...
+    ' использовании ассиметричного распределения'];
+    end
+% F(i+1) = 1;
+% Area(i+1) = 1 - sum(Area);
+    
+    
+% i = linspace(1, length(speed)-1, length(speed)-1);
+Summ = 1 - sum(Area);
+Name_p = "Пробег на последней передаче " + num2str(Summ*100);
+% figure
+% hold on
+% bar(i, Area*100)
+% xlabel('№ передачи')
+% ylabel('Относительный пробег \gamma')
+% title(sprintf(Name), sprintf(Name_p))
+
+%% Часть с построением колокола
+
+    % Генерация массива скоростей
+    v_pdf = linspace(0, speed_max, 1000);
+    
+    % Вычисление плотности вероятности
+    if assimetric ==0
+        % Нормальное распределение
+        pdf_values = normpdf(v_pdf, mu, sigma);
+        dist_type = 'Нормальное распределение';
+    else
+        % Асимметричное распределение (через численное дифференцирование)
+        pdf_values = zeros(size(v_pdf));
+        for i = 1:length(v_pdf)
+            h = 1e-3;
+            % Вычисляем CDF в точках v_pdf ± h
+            F_plus = cdf('Normal', v_pdf(i) + h, mu, sigma) - ...
+                     2 * OwenT((v_pdf(i) + h + mu)/sigma, a);
+            F_minus = cdf('Normal', v_pdf(i) - h, mu, sigma) - ...
+                      2 * OwenT((v_pdf(i) - h + mu)/sigma, a);
+            % PDF = производная CDF
+            pdf_values(i) = (F_plus - F_minus) / (2 * h);
+        end
+        dist_type = 'Асимметричное распределение';
+    end
+
+figure
+hold on
+bar(v_pdf, pdf_values)
+xlabel('№ передачи')
+ylabel('Относительный пробег \gamma')
+title(sprintf(Name), sprintf(Name_p))
+
+function T = OwenT(h, a)
+    integrand = @(x) exp(-0.5 * h^2 * (1 + x.^2)) ./ (1 + x.^2);
+    T = (1 / (2 * pi)) * integral(integrand, 0, a);
+end
+
+end
