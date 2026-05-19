@@ -66,26 +66,21 @@ otnositelni_probeg = otnositelni_probeg * Koef_korrekt_t;
 
 otnositelni_probeg(length(otnositelni_probeg)+1) = ...
     1 - sum(otnositelni_probeg);
-%% Построение графика
-i = linspace(1, length(otnositelni_probeg)-1, length(otnositelni_probeg)-1);
-Summ = otnositelni_probeg(end);
+
+i = linspace(1, length(speed)-1, length(speed)-1);
+Summ = 1 - sum(Area);
 Name_p = "Пробег на последней передаче " + num2str(Summ*100);
 figure
 hold on
-bar(i, otnositelni_probeg(1:end-1)*100)
+bar(i, Area*100)
 
 % Добавление подписей с отступом
-offset = 1; % отступ от вершины столбца
-for j = 1:length(otnositelni_probeg)-1
-    text(i(j), 100*otnositelni_probeg(j) + offset, num2str(100*otnositelni_probeg(j)), ...
+offset = 0.2; % отступ от вершины столбца
+for j = 1:length(Area)
+    text(i(j), 100*Area(j) + offset, num2str(100*Area(j)), ...
         'HorizontalAlignment', 'center', ...
         'FontSize', 12, 'FontWeight', 'bold');
 end
-
-xlabel('№ передачи')
-ylabel('Относительный пробег \gamma')
-title(sprintf('Распределение относительных пробегов'), sprintf(Name_p))
-saveas(gcf, 'Распределение относительных пробегов', 'png');
 
 else
 % % % % %  Нахождение удельной силы тяги на колёсах при высших передачах

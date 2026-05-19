@@ -20,7 +20,7 @@ function [] = Hypoid_setrakov_funktion(...
     betta_1,...     %%%% Желаемый угол наклона шестерни
     pogr)          %%%% Требования степени сходимости для итерационной части       
 format long
-delete_all_files_in_folder("Hypoid_setrakov_funktion_variant")
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %               Определение параметров ЗК по методике сетракова    %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -313,7 +313,7 @@ else
        case n_sh >= 9 
            K_a = 0.170;
        end
-       K_a = K_a*2;
+       K_a = K_a*2.1;
 end
 
 K_b = 1.125 - K_a;

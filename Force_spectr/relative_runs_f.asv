@@ -61,25 +61,16 @@ Name = ['Распределение использования передач п
 % Area(i+1) = 1 - sum(Area);
     
     
-% % % i = linspace(1, length(speed)-1, length(speed)-1);
-% % % Summ = 1 - sum(Area);
-% % % Name_p = "Пробег на последней передаче " + num2str(Summ*100);
-% % % figure
-% % % hold on
-% % % bar(i, Area*100)
-% % % 
-% % % % Добавление подписей с отступом
-% % % offset = 0.2; % отступ от вершины столбца
-% % % for j = 1:length(Area)
-% % %     text(i(j), 100*Area(j) + offset, num2str(100*Area(j)), ...
-% % %         'HorizontalAlignment', 'center', ...
-% % %         'FontSize', 12, 'FontWeight', 'bold');
-% % % end
-% % % 
-% % % xlabel('№ передачи')
-% % % ylabel('Относительный пробег \gamma')
-% % % title(sprintf('Распределение относительных пробегов'), sprintf(Name_p))
-% % % saveas(gcf, 'Распределение относительных пробегов', 'png');
+i = linspace(1, length(speed)-1, length(speed)-1);
+Summ = 1 - sum(Area);
+Name_p = "Пробег на последней передаче " + num2str(Summ*100);
+figure
+hold on
+bar(i, Area*100)
+xlabel('№ передачи')
+ylabel('Относительный пробег \gamma')
+title(sprintf(Name), sprintf(Name_p))
+saveas(gcf, 'Р', 'png');
 
 %% Часть с построением колокола
 
